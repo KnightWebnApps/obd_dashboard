@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socket.IO chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #fed047;    
+      text-align: center;
+    }
+
+    #error {
+      color: red;
+      padding: 1em 0;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      background-color: #333;
+      color: peachpuff;
+      padding: .7em 1em;
+    }
+
+    main #dashboard {
+      display: -ms-grid;
+      display: grid;
+      -ms-grid-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    main #dashboard .meter {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+    }
+  </style>
+</head>
+  <body>
+    
+    <h1>OBD Client</h1>
+    <main>
+      <section >
+        <p id="error"></p>
+        <button onclick="location.reload()">Retry</button>
+      </section>
+      <section id="dashboard">
+        <div class="meter">
+          <h2>Speed</h2>
+          <h3 id="spd"></h3>
+        </div>
+        <div class="meter">
+          <h2>RPM</h2>
+          <h3 id="rpm"></h3>
+        </div>
+      </section>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+
+      var error = document.querySelector('#error');
+      var spd = document.getElementById('spd');
+      var rpm = document.getElementById('rpm');
+
+      const errors = [];
+
+      // When data is sent
+      socket.on('obd', function(msg){
+        console.log(msg);
+        if(msg['speed'] !== undefined){
+          spd.innerText = msg['speed'];
+        }
+        if(msg['rpm'] !== undefined){
+          rpm.innerText = msg['rpm'];
+        }
+        errors = [];
+      });
+
+      // When error is sent 
+      socket.on('obd-err', (msg) => {
+        console.log(msg);
+        errors.push(msg.error);
+        error.innerText = errors.toString();
+      });
+    </script>
+  </body>
+</html>
