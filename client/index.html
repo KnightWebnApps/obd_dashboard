@@ -30,6 +30,12 @@
       padding: .7em 1em;
     }
 
+    main #addition {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     main #dashboard {
       display: -ms-grid;
       display: grid;
@@ -38,16 +44,18 @@
     }
 
     main #dashboard .meter {
-      display: -webkit-box;
-      display: -ms-flexbox;
       display: flex;
-      -webkit-box-orient: vertical;
-      -webkit-box-direction: normal;
-      -ms-flex-direction: column;
       flex-direction: column;
-      -webkit-box-align: center;
-      -ms-flex-align: center;
       align-items: center;
+    }
+
+    main #dashboard .meter #rpm, #spd {
+      background-color: #333;
+      width: 250px;
+      color: whitesmoke;
+      position:fixed;
+      bottom:0;
+      
     }
   </style>
 </head>
@@ -59,14 +67,20 @@
         <p id="error"></p>
         <button onclick="location.reload()">Retry</button>
       </section>
+      <section id="addition">
+        <div class="meter">
+          <h2>MAF</h2>
+          <div id="maf"></div>
+        </div>
+      </section>
       <section id="dashboard">
         <div class="meter">
           <h2>Speed</h2>
-          <h3 id="spd"></h3>
+          <div id="spd"></div>
         </div>
         <div class="meter">
           <h2>RPM</h2>
-          <h3 id="rpm"></h3>
+          <div id="rpm"></div>
         </div>
       </section>
     </main>
@@ -78,6 +92,7 @@
       var error = document.querySelector('#error');
       var spd = document.getElementById('spd');
       var rpm = document.getElementById('rpm');
+      var maf = document.getElementById('maf');
 
       const errors = [];
 
@@ -86,9 +101,16 @@
         console.log(msg);
         if(msg['speed'] !== undefined){
           spd.innerText = msg['speed'];
+
+          spd.style.height = `${(parseInt(msg['speed']))*10}px`
         }
         if(msg['rpm'] !== undefined){
           rpm.innerText = msg['rpm'];
+
+          rpm.style.height = `${(parseInt(msg['rpm']))/3}px`  
+        }
+        if(msg['maf'] !== undefined){
+          maf.innerText = msg['maf'];
         }
         errors = [];
       });
